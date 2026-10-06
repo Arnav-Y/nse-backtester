@@ -321,10 +321,13 @@ if __name__ == "__main__":
     print("-" * 70)
     print(f"{'Metric':<25}{'In-Sample':>20}{'Out-of-Sample':>20}")
     print("-" * 70)
+    print(f"{'Initial Value (Rs.)':<25}{STARTING_CASH:>20,.2f}{STARTING_CASH:>20,.2f}")
+    print(f"{'Final Value (Rs.)':<25}{train_portfolio['portfolio_value'].iloc[-1]:>20,.2f}{test_portfolio['portfolio_value'].iloc[-1]:>20,.2f}")
     print(f"{'Sharpe Ratio':<25}{in_sample_sharpe:>20.3f}{out_sample_sharpe:>20.3f}")
     print(f"{'Total Return %':<25}{in_sample_return:>20.2f}{out_sample_return:>20.2f}")
     print(f"{'CAGR % (annualized)':<25}{in_sample_cagr:>20.2f}{out_sample_cagr:>20.2f}")
     print("=" * 70)
+    print("Note: each window starts fresh from the same Initial Value (independent evaluation, not compounded).")
     print("Note: Total Return is cumulative over each window (different lengths); "
           "compare CAGR for an apples-to-apples annualized read.")
 
@@ -337,7 +340,8 @@ if __name__ == "__main__":
     print(f"\nPrepared by Arnav Yadav")
 
     full_portfolio = pd.concat([train_portfolio, test_portfolio]).reset_index(drop=True)
-    print(f"\nBacktest Complete for {SYMBOL}. Final Value: Rs.{full_portfolio['portfolio_value'].iloc[-1]:,.2f}")
+    print(f"\nBacktest Complete for {SYMBOL}. Initial Value: Rs.{STARTING_CASH:,.2f} -> "
+          f"Final Value: Rs.{full_portfolio['portfolio_value'].iloc[-1]:,.2f}")
 
     full_portfolio["date"] = pd.to_datetime(full_portfolio["date"])
     full_portfolio.plot(x="date", y="portfolio_value", title=f"Equity Curve - {SYMBOL}")
