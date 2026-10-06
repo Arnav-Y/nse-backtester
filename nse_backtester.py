@@ -175,6 +175,18 @@ def compute_sharpe(portfolio_df, periods_per_year=252):
         return 0.0
     return float((returns.mean() / returns.std()) * np.sqrt(periods_per_year))
 
+def compute_cagr(portfolio_df, periods_per_year=252):
+    if portfolio_df.empty or len(portfolio_df) < 2:
+        return 0.0
+    years = (len(portfolio_df) - 1) / periods_per_year
+    if years <= 0:
+        return 0.0
+    start_val = portfolio_df["portfolio_value"].iloc[0]
+    end_val = portfolio_df["portfolio_value"].iloc[-1]
+    if start_val <= 0:
+        return 0.0
+    return float(((end_val / start_val) ** (1 / years) - 1) * 100)
+
 def compute_total_return(portfolio_df):
     if portfolio_df.empty or len(portfolio_df) < 2:
         return 0.0
@@ -295,9 +307,13 @@ if __name__ == "__main__":
     out_sample_sharpe = compute_sharpe(test_portfolio)
     in_sample_return  = compute_total_return(train_portfolio)
     out_sample_return = compute_total_return(test_portfolio)
+    in_sample_cagr    = compute_cagr(train_portfolio)
+    out_sample_cagr   = compute_cagr(test_portfolio)
 
-    train_range = f"{START_DATE} to {TRAIN_END_DATE}"
-    test_range  = f"{TEST_START_DATE} to {END_DATE}"
+    train_years = (len(train_portfolio) - 1) / 252 if len(train_portfolio) > 1 else 0.0
+    test_years  = (len(test_portfolio) - 1) / 252 if len(test_portfolio) > 1 else 0.0
+    train_range = f"{START_DATE} to {TRAIN_END_DATE} (~{train_years:.2f} yrs)"
+    test_range  = f"{TEST_START_DATE} to {END_DATE} (~{test_years:.2f} yrs)"
 
     print("\n" + "=" * 70)
     print(f"In-Sample (Train):     {train_range}")
@@ -307,7 +323,10 @@ if __name__ == "__main__":
     print("-" * 70)
     print(f"{'Sharpe Ratio':<25}{in_sample_sharpe:>20.3f}{out_sample_sharpe:>20.3f}")
     print(f"{'Total Return %':<25}{in_sample_return:>20.2f}{out_sample_return:>20.2f}")
+    print(f"{'CAGR % (annualized)':<25}{in_sample_cagr:>20.2f}{out_sample_cagr:>20.2f}")
     print("=" * 70)
+    print("Note: Total Return is cumulative over each window (different lengths); "
+          "compare CAGR for an apples-to-apples annualized read.")
 
     if in_sample_sharpe != 0:
         degradation = (in_sample_sharpe - out_sample_sharpe) / abs(in_sample_sharpe)
