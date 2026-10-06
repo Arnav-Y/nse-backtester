@@ -334,7 +334,7 @@ if __name__ == "__main__":
             print(f"\nWARNING: out-of-sample Sharpe dropped {degradation * 100:.1f}% vs in-sample — "
                   f"possible overfitting to the training window.")
 
-    print(f"\nPrepared by Surekha Yadav")
+    print(f"\nPrepared by Arnav Yadav")
 
     full_portfolio = pd.concat([train_portfolio, test_portfolio]).reset_index(drop=True)
     print(f"\nBacktest Complete for {SYMBOL}. Final Value: Rs.{full_portfolio['portfolio_value'].iloc[-1]:,.2f}")
